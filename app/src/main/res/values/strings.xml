@@ -9,4 +9,9 @@
     <string name="now_playing">Now Playing</string>
     <string name="tv_show">TV Shows</string>
     <string name="popular_people">Popular People</string>
+    <string name="search_movie">Search Movie...</string>
+    <string name="copyright">TMT Batch 3 - Android Session</string>
+    <string name="list">View As List</string>
+    <string name="grid">View As Grid</string>
+    <string name="staggered">View As Staggered</string>
 </resources>
