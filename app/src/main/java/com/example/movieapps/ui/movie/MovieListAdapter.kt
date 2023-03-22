@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.movieapps.BuildConfig.IMAGE_URL
+import com.example.movieapps.R
 import com.example.movieapps.databinding.ItemMovieBinding
-import com.example.movieapps.model.Movie
+import com.example.movieapps.model.ResultsItem
+import com.faltenreich.skeletonlayout.Skeleton
 
 class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
-    private val movieList: MutableList<Movie> = mutableListOf()
+    private val movieList: MutableList<ResultsItem> = mutableListOf()
     var delegate: MovieDelegate? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -22,9 +26,11 @@ class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>()
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         with(holder){
             with(movieList[position]){
-                binding.ivPoster.setImageResource(this.poster!!)
+                Glide.with(itemView.context)
+                    .load(IMAGE_URL + this.posterPath)
+                    .into(ivPoster)
                 binding.tvTitle.text = this.title
-                binding.tvRating.text = this.rating.toString()
+                binding.tvRating.text = this.voteAverage.toString()
                 binding.tvOverview.text = this.overview
             }
             holder.itemView.setOnClickListener{
@@ -34,7 +40,7 @@ class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setAdapter(movies: List<Movie>){
+    fun setAdapter(movies: List<ResultsItem>){
         movieList.clear()
         movieList.addAll(movies)
         notifyDataSetChanged()
@@ -48,6 +54,6 @@ class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>()
     }
 
     interface MovieDelegate{
-        fun onItemClicked(movie: Movie)
+        fun onItemClicked(movie: ResultsItem)
     }
 }

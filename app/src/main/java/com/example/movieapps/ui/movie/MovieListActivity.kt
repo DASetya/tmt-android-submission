@@ -3,24 +3,34 @@ package com.example.movieapps.ui.movie
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.movieapps.BuildConfig
+import com.example.movieapps.BuildConfig.API_KEY
 import com.example.movieapps.R
 import com.example.movieapps.databinding.ActivityMovieListBinding
-import com.example.movieapps.dummy.MovieData
-import com.example.movieapps.model.Movie
+import com.example.movieapps.model.MovieResponse
+import com.example.movieapps.model.ResultsItem
+import com.example.movieapps.network.ApiConfig
+import com.faltenreich.skeletonlayout.Skeleton
+import com.faltenreich.skeletonlayout.applySkeleton
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MovieListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMovieListBinding
     private lateinit var adapter: MovieListAdapter
+    private lateinit var skeleton: Skeleton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,20 +38,45 @@ class MovieListActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = "Movie List"
+        val query = intent.getStringExtra(EXTRA_QUERY)
         adapter = MovieListAdapter()
         binding.rvMovies.adapter = adapter
 
         val linearLayoutManager = LinearLayoutManager(this, VERTICAL, false)
         binding.rvMovies.layoutManager = linearLayoutManager
+        skeleton = binding.rvMovies.applySkeleton(R.layout.item_movie, 7)
+        skeleton.showSkeleton()
 
-        adapter.delegate = object : MovieListAdapter.MovieDelegate{
-            override fun onItemClicked(movie: Movie) {
+        val apiService = ApiConfig.getApiService()
+        val call = apiService.getMovies(API_KEY)
+
+        call.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful) {
+                    val list = response.body()?.results
+                    list?.let {
+//                        Log.d("foo", "onResponse: ${list.size}")
+                        adapter.setAdapter(list as List<ResultsItem>)
+                    }
+                }
+                skeleton.showOriginal()
+            }
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Log.d("foo", "onFailure: ${t.message}")
+                Toast.makeText(this@MovieListActivity, "Failed get data", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        if (query != null) {
+            searchMovie(query)
+        }
+
+        adapter.delegate = object : MovieListAdapter.MovieDelegate {
+            override fun onItemClicked(movie: ResultsItem) {
                 MovieDetailActivity.open(this@MovieListActivity, "Movie Detail", movie)
             }
         }
 
-        adapter.setAdapter(MovieData.getList())
-        binding.rvMovies.isVisible = MovieData.getList().isNotEmpty()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -50,15 +85,17 @@ class MovieListActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.action_list -> {
                 binding.rvMovies.layoutManager = LinearLayoutManager(this)
             }
             R.id.action_grid -> {
-                binding.rvMovies.layoutManager = GridLayoutManager(this, 1, RecyclerView.HORIZONTAL, false)
+                binding.rvMovies.layoutManager =
+                    GridLayoutManager(this, 1, RecyclerView.HORIZONTAL, false)
             }
             R.id.action_staggered -> {
-                binding.rvMovies.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+                binding.rvMovies.layoutManager =
+                    StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -69,9 +106,30 @@ class MovieListActivity : AppCompatActivity() {
         return true
     }
 
-    companion object{
-        fun open(activity: AppCompatActivity){
+    private fun searchMovie(query: String){
+        val apiService = ApiConfig.getApiService()
+        val call = apiService.searchMovies(BuildConfig.API_KEY, query)
+        call.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful) {
+                    val list = response.body()?.results
+                    list?.let {
+                        adapter.setAdapter(list as List<ResultsItem>)
+                    }
+                }
+            }
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Log.d("foo", "onFailure: ${t.message}")
+                Toast.makeText(this@MovieListActivity, "Failed get data", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    companion object {
+        const val EXTRA_QUERY = "extra_query"
+        fun open(activity: AppCompatActivity, query: String?) {
             val intent = Intent(activity, MovieListActivity::class.java)
+            intent.putExtra(EXTRA_QUERY, query)
             ActivityCompat.startActivity(activity, intent, null)
         }
     }
