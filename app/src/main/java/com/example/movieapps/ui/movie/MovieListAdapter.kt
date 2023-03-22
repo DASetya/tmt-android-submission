@@ -28,6 +28,7 @@ class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>()
             with(movieList[position]){
                 Glide.with(itemView.context)
                     .load(IMAGE_URL + this.posterPath)
+                    .placeholder(R.drawable.baseline_image_24)
                     .into(ivPoster)
                 binding.tvTitle.text = this.title
                 binding.tvRating.text = this.voteAverage.toString()

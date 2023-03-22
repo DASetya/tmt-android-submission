@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.example.movieapps.BuildConfig.IMAGE_URL
+import com.example.movieapps.R
 import com.example.movieapps.databinding.ActivityMovieDetailBinding
 import com.example.movieapps.model.ResultsItem
 import com.faltenreich.skeletonlayout.Skeleton
