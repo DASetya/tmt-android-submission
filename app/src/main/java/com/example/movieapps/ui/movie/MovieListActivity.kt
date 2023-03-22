@@ -52,24 +52,26 @@ class MovieListActivity : AppCompatActivity() {
 
         if (query != null) {
             searchMovie(query)
-        } else{
-            call.enqueue(object : Callback<MovieResponse> {
-                override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                    if (response.isSuccessful) {
-                        val list = response.body()?.results
-                        list?.let {
-//                        Log.d("foo", "onResponse: ${list.size}")
-                            adapter.setAdapter(list as List<ResultsItem>)
-                        }
-                    }
-                    skeleton.showOriginal()
-                }
-                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                    Log.d("foo", "onFailure: ${t.message}")
-                    Toast.makeText(this@MovieListActivity, "Failed get data", Toast.LENGTH_SHORT).show()
-                }
-            })
         }
+
+        call.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful) {
+                    val list = response.body()?.results
+                    list?.let {
+//                        Log.d("foo", "onResponse: ${list.size}")
+                        adapter.setAdapter(list as List<ResultsItem>)
+                    }
+                }
+                skeleton.showOriginal()
+            }
+
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Log.d("foo", "onFailure: ${t.message}")
+                Toast.makeText(this@MovieListActivity, "Failed get data", Toast.LENGTH_SHORT).show()
+            }
+        })
+
 
         adapter.delegate = object : MovieListAdapter.MovieDelegate {
             override fun onItemClicked(movie: ResultsItem) {
@@ -106,7 +108,7 @@ class MovieListActivity : AppCompatActivity() {
         return true
     }
 
-    private fun searchMovie(query: String){
+    private fun searchMovie(query: String) {
         val apiService = ApiConfig.getApiService()
         val call = apiService.searchMovies(BuildConfig.API_KEY, query)
         call.enqueue(object : Callback<MovieResponse> {
@@ -118,6 +120,7 @@ class MovieListActivity : AppCompatActivity() {
                     }
                 }
             }
+
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Log.d("foo", "onFailure: ${t.message}")
                 Toast.makeText(this@MovieListActivity, "Failed get data", Toast.LENGTH_SHORT).show()
