@@ -9,7 +9,6 @@ import com.example.movieapps.BuildConfig.IMAGE_URL
 import com.example.movieapps.R
 import com.example.movieapps.databinding.ItemMovieBinding
 import com.example.movieapps.model.ResultsItem
-import com.faltenreich.skeletonlayout.Skeleton
 
 class MovieListAdapter: RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 

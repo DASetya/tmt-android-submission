@@ -18,10 +18,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        getWindow().setFlags(
-//            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//            WindowManager.LayoutParams.FLAG_FULLSCREEN)
-//        supportActionBar?.hide()
+
+        val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
+        val textUsername = sharedPreferences.getString("username", "")
+
+        title = "Hi, $textUsername"
 
         val menuId = listOf(
             binding.menu1, binding.menu2, binding.menu3, binding.menu4, binding.menu5, binding.menu6, binding.menu7, binding.menu8, binding.menu9

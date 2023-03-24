@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.movieapps.R
 import com.example.movieapps.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -14,6 +13,8 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        title = "Login"
 
         binding.btnLogin.setOnClickListener {
             if (!validate()){
