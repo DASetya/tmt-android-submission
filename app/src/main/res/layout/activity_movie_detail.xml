@@ -36,6 +36,28 @@
                 android:layout_marginStart="16dp"
                 android:src="@drawable/dummy"
                 android:layout_centerVertical="true"/>
+            <ImageView
+                android:id="@+id/addFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/favorite"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/red"
+                android:visibility="visible"/>
+            <ImageView
+                android:id="@+id/removeFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/favorited"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/red"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <TextView

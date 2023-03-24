@@ -1,19 +1,14 @@
 package com.example.movieapps.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.WindowManager
-import android.widget.Toast
-import com.example.movieapps.BuildConfig
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
+import com.example.movieapps.R
 import com.example.movieapps.databinding.ActivityMainBinding
-import com.example.movieapps.model.MovieResponse
-import com.example.movieapps.model.ResultsItem
-import com.example.movieapps.network.ApiConfig
+import com.example.movieapps.ui.favorite.FavoriteMovieActivity
 import com.example.movieapps.ui.movie.MovieListActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,11 +17,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        getWindow().setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(binding.root)
-        supportActionBar?.hide()
+//        getWindow().setFlags(
+//            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//            WindowManager.LayoutParams.FLAG_FULLSCREEN)
+//        supportActionBar?.hide()
 
         val menuId = listOf(
             binding.menu1, binding.menu2, binding.menu3, binding.menu4, binding.menu5, binding.menu6, binding.menu7, binding.menu8, binding.menu9
@@ -36,9 +31,42 @@ class MainActivity : AppCompatActivity() {
                 MovieListActivity.open(this@MainActivity, null)
             }
         }
+        binding.menu10.setOnClickListener {
+            startActivity(Intent(this@MainActivity, FavoriteMovieActivity::class.java))
+        }
         binding.searchMovie.setOnClickListener {
             val query = binding.searchMovie.text.toString()
             MovieListActivity.open(this@MainActivity, query)
         }
+        binding.searchMovie.setOnKeyListener { _, keyCode, event ->
+            val query = binding.searchMovie.text.toString()
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                MovieListActivity.open(this@MainActivity, query)
+                return@setOnKeyListener true
+            }
+            false
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_items, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.logout -> {
+                val sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE)
+                val editor = sharedPref.edit()
+                editor.clear()
+                editor.apply()
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
+            }
+            R.id.favorite -> {
+                startActivity(Intent(this@MainActivity, FavoriteMovieActivity::class.java))
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

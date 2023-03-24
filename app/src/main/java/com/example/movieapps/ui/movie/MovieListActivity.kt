@@ -1,5 +1,6 @@
 package com.example.movieapps.ui.movie
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,6 +21,8 @@ import com.example.movieapps.databinding.ActivityMovieListBinding
 import com.example.movieapps.model.MovieResponse
 import com.example.movieapps.model.ResultsItem
 import com.example.movieapps.network.ApiConfig
+import com.example.movieapps.ui.LoginActivity
+import com.example.movieapps.ui.favorite.FavoriteMovieActivity
 import com.faltenreich.skeletonlayout.Skeleton
 import com.faltenreich.skeletonlayout.applySkeleton
 import retrofit2.Call
@@ -59,8 +62,7 @@ class MovieListActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val list = response.body()?.results
                     list?.let {
-//                        Log.d("foo", "onResponse: ${list.size}")
-                        adapter.setAdapter(list as List<ResultsItem>)
+                        adapter.setAdapter(it)
                     }
                 }
                 skeleton.showOriginal()
@@ -78,7 +80,6 @@ class MovieListActivity : AppCompatActivity() {
                 MovieDetailActivity.open(this@MovieListActivity, "Movie Detail", movie)
             }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -99,6 +100,17 @@ class MovieListActivity : AppCompatActivity() {
                 binding.rvMovies.layoutManager =
                     StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             }
+            R.id.logout -> {
+                val sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE)
+                val editor = sharedPref.edit()
+                editor.clear()
+                editor.apply()
+                startActivity(Intent(this@MovieListActivity, LoginActivity::class.java))
+                finish()
+            }
+            R.id.favorite -> {
+                startActivity(Intent(this@MovieListActivity, FavoriteMovieActivity::class.java))
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -116,7 +128,7 @@ class MovieListActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val list = response.body()?.results
                     list?.let {
-                        adapter.setAdapter(list as List<ResultsItem>)
+                        adapter.setAdapter(it)
                     }
                 }
             }

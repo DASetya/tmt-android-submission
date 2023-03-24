@@ -15,4 +15,14 @@
         android:id="@+id/action_staggered"
         android:title="@string/staggered"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/favorite"
+        android:title="@string/my_favorite"
+        app:showAsAction="never"/>
 </menu>
